@@ -1,0 +1,80 @@
+"""
+Iris Dataset Visualization Script (Seaborn Version)
+
+This script loads the Iris dataset and generates visualizations using Seaborn:
+1. Histogram of Sepal Length
+2. Boxplot of Petal Length grouped by Species
+3. Correlation Heatmap
+4. Scatterplot (Sepal Length vs Petal Length)
+"""
+
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# Apply Seaborn theme
+sns.set_theme(style="whitegrid")
+
+# ------------------------------------------------------
+# Load Dataset
+# ------------------------------------------------------
+def load_dataset(path):
+    """
+    Load the iris dataset from a CSV file.
+
+    Args:
+        path (str): Path to the CSV file.
+
+    Returns:
+        pandas.DataFrame: Loaded dataset.
+    """
+    df = pd.read_csv(path)
+    return df
+
+df = load_dataset("iris_cleaned.csv")  # Change path if needed
+
+# Normalize column names
+df.columns = [c.strip().lower().replace(" ", "_") for c in df.columns]
+
+numeric_cols = ["sepal_length", "sepal_width", "petal_length", "petal_width"]
+
+# ------------------------------------------------------
+# 1. Histogram of Sepal Length
+# ------------------------------------------------------
+plt.figure(figsize=(8, 5))
+sns.histplot(df["sepal_length"], kde=True, bins=12)
+plt.title("Histogram of Sepal Length")
+plt.xlabel("Sepal Length (cm)")
+plt.ylabel("Frequency")
+plt.show()
+
+# ------------------------------------------------------
+# 2. Boxplot of Petal Length grouped by Species
+# ------------------------------------------------------
+plt.figure(figsize=(8, 6))
+sns.boxplot(data=df, x="species", y="petal_length")
+plt.title("Boxplot of Petal Length by Species")
+plt.xlabel("Species")
+plt.ylabel("Petal Length (cm)")
+plt.show()
+
+# ------------------------------------------------------
+# 3. Correlation Heatmap
+# ------------------------------------------------------
+corr = df[numeric_cols].corr()
+
+plt.figure(figsize=(7, 5))
+sns.heatmap(corr, annot=True, cmap="coolwarm", fmt=".2f")
+plt.title("Correlation Heatmap of Numerical Features")
+plt.show()
+
+# ------------------------------------------------------
+# 4. Scatterplot (Sepal Length vs Petal Length)
+# ------------------------------------------------------
+plt.figure(figsize=(8, 6))
+sns.scatterplot(data=df, x="sepal_length", y="petal_length", hue="species", s=80)
+plt.title("Scatterplot: Sepal Length vs Petal Length")
+plt.xlabel("Sepal Length (cm)")
+plt.ylabel("Petal Length (cm)")
+plt.legend(title="Species")
+plt.show()
