@@ -1,0 +1,99 @@
+"""
+Iris Dataset Visualization Script
+
+This script loads the Iris dataset, performs basic exploratory data analysis (EDA),
+and generates the following visualizations using Matplotlib:
+
+1. Histogram of Sepal Length
+2. Boxplot of Petal Length grouped by Species
+3. Correlation Heatmap of numerical features
+4. Scatterplot (Sepal Length vs Petal Length) colored by species
+"""
+
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+
+# ------------------------------------------------------
+# Load Dataset
+# ------------------------------------------------------
+def load_dataset(path):
+    """
+    Load the iris dataset from a CSV file.
+
+    Args:
+        path (str): Path to the CSV file.
+
+    Returns:
+        pandas.DataFrame: Loaded dataset.
+    """
+    df = pd.read_csv(path)
+    return df
+
+df = load_dataset("iris_cleaned.csv")  # change path if needed
+
+# Normalize column names
+df.columns = [c.strip().lower().replace(" ", "_") for c in df.columns]
+
+numeric_cols = ["sepal_length", "sepal_width", "petal_length", "petal_width"]
+
+# ------------------------------------------------------
+# 1. Histogram of Sepal Length
+# ------------------------------------------------------
+plt.figure(figsize=(8, 5))
+plt.hist(df["sepal_length"], bins=12, edgecolor='black', alpha=0.8)
+plt.title("Histogram of Sepal Length")
+plt.xlabel("Sepal Length (cm)")
+plt.ylabel("Frequency")
+plt.grid(axis='y', alpha=0.3)
+plt.show()
+
+# ------------------------------------------------------
+# 2. Boxplot of Petal Length grouped by Species
+# ------------------------------------------------------
+plt.figure(figsize=(8, 6))
+species = df["species"].unique()
+data_to_plot = [df[df["species"] == s]["petal_length"] for s in species]
+
+plt.boxplot(data_to_plot, labels=species, showfliers=True)
+plt.title("Boxplot of Petal Length by Species")
+plt.xlabel("Species")
+plt.ylabel("Petal Length (cm)")
+plt.grid(axis='y', alpha=0.3)
+plt.show()
+
+# ------------------------------------------------------
+# 3. Correlation Heatmap
+# ------------------------------------------------------
+corr = df[numeric_cols].corr()
+
+plt.figure(figsize=(6, 5))
+im = plt.imshow(corr, cmap='RdBu_r', vmin=-1, vmax=1)
+plt.colorbar(im, fraction=0.046, pad=0.04)
+plt.xticks(range(len(numeric_cols)), numeric_cols, rotation=45)
+plt.yticks(range(len(numeric_cols)), numeric_cols)
+plt.title("Correlation Heatmap")
+
+# add correlation numbers
+for i in range(len(numeric_cols)):
+    for j in range(len(numeric_cols)):
+        plt.text(j, i, f"{corr.iloc[i, j]:.2f}", ha='center', va='center')
+
+plt.tight_layout()
+plt.show()
+
+# ------------------------------------------------------
+# 4. Scatterplot (Sepal Length vs Petal Length)
+# ------------------------------------------------------
+plt.figure(figsize=(8, 6))
+
+for s in species:
+    subset = df[df["species"] == s]
+    plt.scatter(subset["sepal_length"], subset["petal_length"], label=s, s=50)
+
+plt.title("Scatterplot: Sepal Length vs Petal Length")
+plt.xlabel("Sepal Length (cm)")
+plt.ylabel("Petal Length (cm)")
+plt.legend(title="Species")
+plt.grid(alpha=0.3)
+plt.show()
